@@ -1,0 +1,54 @@
+{
+  "features": [
+    "recency",
+    "tenure",
+    "spend_4w",
+    "spend_12w",
+    "baskets_4w",
+    "baskets_12w",
+    "active_weeks_12w",
+    "avg_basket_12w",
+    "disc_share_12w",
+    "redeem_12w",
+    "redeem_ever"
+  ],
+  "threshold": 0.3,
+  "horizon_weeks": 4,
+  "tiers": {
+    "high": 0.5,
+    "medium": 0.3
+  },
+  "params": {
+    "n_estimators": 100,
+    "max_depth": 4,
+    "learning_rate": 0.02,
+    "min_child_weight": 1,
+    "colsample_bytree": 0.8,
+    "subsample": 0.8,
+    "eval_metric": "logloss",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "metrics": {
+    "validation": {
+      "rows": 29976,
+      "lapse_rate": 0.196,
+      "pr_auc": 0.6422,
+      "roc_auc": 0.8871,
+      "brier": 0.1031,
+      "contacts_share": 0.244,
+      "precision_at_threshold": 0.56,
+      "recall_at_threshold": 0.697
+    },
+    "test": {
+      "rows": 29989,
+      "lapse_rate": 0.194,
+      "pr_auc": 0.6223,
+      "roc_auc": 0.8818,
+      "brier": 0.1048,
+      "contacts_share": 0.238,
+      "precision_at_threshold": 0.561,
+      "recall_at_threshold": 0.687
+    }
+  }
+}
