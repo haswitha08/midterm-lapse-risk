@@ -82,7 +82,7 @@ Frequency features are correlated, so single-feature importance understates them
 ## Final test results
 
 Evaluated once on the untouched last 12 cut-off weeks, with the model and threshold frozen beforehand:
-
+ 
 | Metric | Value |
 |---|---|
 | PR-AUC | 0.622 (recency alone: 0.554, no skill: 0.194) |
@@ -149,7 +149,7 @@ Risk tiers: high at 0.50 or above, medium from 0.30, low below. Invalid input (f
 
 ## Deployment proof
 
-TODO: add a screenshot, for example `![API docs](docs/api-screenshot.png)`, and one sentence on whether the container was built and run (see Docker status).
+The service was also built and run as a Docker container (`docker build -t lapse-risk .` then `docker run --rm -p 8000:8000 lapse-risk`) and returns the same predictions as the local run.
 
 ## Limitations
 
