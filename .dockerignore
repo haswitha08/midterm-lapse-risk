@@ -1,9 +1,5 @@
-@"
 .venv*/
 .git/
 data/
 notebooks/
 __pycache__/
-"@ | Set-Content .dockerignore -Encoding ascii
-(Get-Item .dockerignore).Length
-Get-Content .dockerignore
