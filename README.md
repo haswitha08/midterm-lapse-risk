@@ -12,8 +12,7 @@ The model predicts who is likely to lapse, not who would respond to a coupon. Me
 
 dunnhumby **The Complete Journey**: grocery transactions of 2,500 households over 102 weeks (2,595,732 product lines), plus coupon, campaign and demographic tables.
 Source: https://www.dunnhumby.com/source-files/
-License/terms: TODO (paste the terms text you saved from the download page, or a link to it).
-
+License/terms: see the dunnhumby download page (https://www.dunnhumby.com/source-files/). The data is not redistributed in this repository.
 The raw data is **not** in this repository. To reproduce, download it and put the 8 CSV files in `data/raw/`.
 
 ## Approach
@@ -42,11 +41,12 @@ The raw data is **not** in this repository. To reproduce, download it and put th
 
 ## Models
 
-Logistic Regression, Decision Tree, Random Forest and XGBoost were trained on three feature sets, then the best three were tuned with random search on the validation block.
+Logistic Regression, Decision Tree, Random Forest and XGBoost were trained on three feature sets, then Logistic Regression, Random Forest and XGBoost were tuned with random search on the validation block.
 
-| Model (tuned, behavior features) | PR-AUC | ROC-AUC | Brier |
+| Model (tuned, behavior features), validation block | PR-AUC | ROC-AUC | Brier |
 |---|---|---|---|
 | Recency alone (baseline) | 0.573 | | |
+| Decision Tree (not tuned) | 0.622 | 0.881 | n/a |
 | Logistic Regression | 0.639 | 0.885 | 0.1031 |
 | Random Forest | 0.642 | 0.887 | 0.1022 |
 | **XGBoost (selected)** | **0.642** | 0.887 | 0.1031 |
@@ -103,10 +103,13 @@ notebooks/          01_explore.ipynb: EDA, features, model comparison, tuning, e
 src/train.py        builds features from raw data, trains, evaluates, saves models/
 src/predict.py      FastAPI prediction service
 models/             model.json (XGBoost) and meta.json (features, threshold, metrics)
+docs/               API screenshot
 Dockerfile, requirements.txt, .dockerignore
 ```
 
 ## How to run
+
+Developed with Python 3.14 (the Docker image uses `python:3.14-slim`).
 
 ```bash
 python -m venv .venv
@@ -120,7 +123,7 @@ pip install -r requirements.txt
 python src/train.py --raw data/raw --out models
 ```
 
-`train.py` fits on cut-offs up to week 82 (train plus validation) for the saved model and prints validation and test metrics from the train-only model.
+`train.py` fits on cut-offs up to week 82 (train plus validation) for the saved model and prints validation and test metrics from the train-only model.The deployed model is the refit one and was not evaluated separately; the reported test metrics come from the train-only model.
 
 **Serve locally:**
 
@@ -144,12 +147,17 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -
 ```
 
 Response: `{"lapse_probability": 0.4633, "risk_tier": "medium", "contact": true, "threshold": 0.3}`
+On Windows PowerShell, use `curl.exe` instead of `curl`, or use the interactive `/docs` page.
 
 Risk tiers: high at 0.50 or above, medium from 0.30, low below. Invalid input (for example a negative `recency`) returns a 422 error naming the field.
 
 ## Deployment proof
 
-The service was also built and run as a Docker container (`docker build -t lapse-risk .` then `docker run --rm -p 8000:8000 lapse-risk`) and returns the same predictions as the local run.
+
+![API docs](docs/api-screenshot.png)
+
+The prediction service runs locally with uvicorn (screenshot above): `/health` and `/predict` respond as expected, and invalid input is rejected with a 422 error. It was also built and run as a Docker container (`docker build -t lapse-risk .` then `docker run --rm -p 8000:8000 lapse-risk`) and returns the same predictions as the local run.
+
 
 ## Limitations
 
